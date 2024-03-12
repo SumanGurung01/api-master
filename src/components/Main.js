@@ -3,9 +3,10 @@ import { methods } from "../utils/constant";
 import { useDispatch, useSelector } from "react-redux";
 import Query from "./Query";
 import { generateUrlFromParams } from "../utils/libs";
+import Response from "./Response";
 
 function Main() {
-  const { url, params } = useSelector((state) => state);
+  const { method, url, params } = useSelector((state) => state);
 
   const dispatch = useDispatch();
 
@@ -22,12 +23,27 @@ function Main() {
     var status;
     const start = Date.now();
 
-    await fetch(finalURL)
-      .then((response) => {
-        status = response.status;
-        return response.json();
+    if (method === "GET") {
+      await fetch(finalURL)
+        .then((response) => {
+          status = response.status;
+          return response.json();
+        })
+        .then((result) => console.log(result));
+    } else {
+      await fetch(finalURL, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
       })
-      .then((result) => console.log(result));
+        .then((response) => {
+          status = response.status;
+          return response.json();
+        })
+        .then((result) => console.log(result));
+    }
 
     const end = Date.now();
     const time = end - start;
@@ -69,6 +85,7 @@ function Main() {
       </div>
 
       <Query />
+      <Response />
     </div>
   );
 }

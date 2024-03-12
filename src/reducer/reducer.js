@@ -35,7 +35,7 @@ const paramsReducer = (
   }
 };
 
-const responseDetailReducer = (detail = { statusCode: 0, time: 0 }, action) => {
+const responseDetailReducer = (detail = { status: 0, time: 0 }, action) => {
   switch (action.type) {
     case "SET_DETAIL":
       return { ...action.payload };
