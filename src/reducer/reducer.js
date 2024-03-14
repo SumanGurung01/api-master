@@ -44,9 +44,19 @@ const responseDetailReducer = (detail = { status: 0, time: 0 }, action) => {
   }
 };
 
+const responseReducer = (response = null, action) => {
+  switch (action.type) {
+    case "SET_RESPONSE":
+      return action.payload;
+    default:
+      return response;
+  }
+};
+
 export const allReducers = combineReducers({
   method: methodReducer,
   url: urlReducer,
   params: paramsReducer,
   responseDetail: responseDetailReducer,
+  response: responseReducer,
 });

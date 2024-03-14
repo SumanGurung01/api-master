@@ -6,7 +6,9 @@ import { generateUrlFromParams } from "../utils/libs";
 import Response from "./Response";
 
 function Main() {
-  const { method, url, params } = useSelector((state) => state);
+  const method = useSelector((state) => state.method);
+  const url = useSelector((state) => state.url);
+  const params = useSelector((state) => state.params);
 
   const dispatch = useDispatch();
 
@@ -29,7 +31,9 @@ function Main() {
           status = response.status;
           return response.json();
         })
-        .then((result) => console.log(result));
+        .then((result) => {
+          dispatch({ type: "SET_RESPONSE", payload: result });
+        });
     } else {
       await fetch(finalURL, {
         method: method,
@@ -42,7 +46,9 @@ function Main() {
           status = response.status;
           return response.json();
         })
-        .then((result) => console.log(result));
+        .then((result) => {
+          dispatch({ type: "SET_RESPONSE", payload: result });
+        });
     }
 
     const end = Date.now();
