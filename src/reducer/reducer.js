@@ -10,7 +10,7 @@ const methodReducer = (method = "GET", action) => {
   }
 };
 
-const urlReducer = (url = "https://example.com/", action) => {
+const urlReducer = (url = "", action) => {
   switch (action.type) {
     case "SET_URL":
       return action.payload;
@@ -62,6 +62,14 @@ const requestJsonReducer = (request = null, action) => {
   }
 };
 
+const headersReducer = (headers = [], action) => {
+  switch (action.type) {
+    case "SET_HEADERS":
+      return action.payload;
+    default:
+      return headers;
+  }
+};
 export const allReducers = combineReducers({
   method: methodReducer,
   url: urlReducer,
@@ -69,4 +77,5 @@ export const allReducers = combineReducers({
   responseDetail: responseDetailReducer,
   response: responseReducer,
   request: requestJsonReducer,
+  headers: headersReducer,
 });

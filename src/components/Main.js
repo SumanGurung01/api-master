@@ -1,16 +1,16 @@
 import React from "react";
 import { methods } from "../utils/constant";
 import { useDispatch, useSelector } from "react-redux";
-import Query from "./RequestQuery";
 import { generateUrlFromParams } from "../utils/libs";
 import Response from "./Response";
-import Json, { getRequestJSON } from "./RequestJson";
+import { getRequestJSON } from "./RequestJson";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
 function Main() {
-  console.log("Main");
   const method = useSelector((state) => state.method);
   const url = useSelector((state) => state.url);
   const params = useSelector((state) => state.params);
+  const location = useLocation();
 
   const dispatch = useDispatch();
 
@@ -19,21 +19,24 @@ function Main() {
     dispatch({ type: "SET_METHOD", payload: e.target.value });
   }
 
+  var headersArray;
+
   //function to handleRequest
   async function handleRequest() {
-    // if empty url then return
+    // Check if URL is empty
     if (url === "") {
       alert("Enter URL");
       return;
     }
 
-    var error = false;
-    // generate param url string => eg: name=user&age=10
-    var paramsURL = generateUrlFromParams(params);
+    let error = false;
 
-    // get the request json
-    var requestJSON;
+    // Generate URL parameters string
+    const paramsURL = generateUrlFromParams(params);
+
+    let requestJSON;
     try {
+      // Parse request JSON
       requestJSON = JSON.parse(getRequestJSON().text.join(""));
     } catch {
       error = true;
@@ -41,66 +44,60 @@ function Main() {
     }
 
     if (error) {
-      dispatch({ type: "SET_DETAIL", payload: { status: 400, time: 0 } });
-      dispatch({ type: "SET_RESPONSE", payload: {} });
+      // Handle error
+      resetState();
       return;
     }
 
-    dispatch({
-      type: "SET_REQUEST_JSON",
-      payload: requestJSON,
-    });
+    // Set request JSON
+    dispatch({ type: "SET_REQUEST_JSON", payload: requestJSON });
 
-    // concat main url and query params
-    var finalURL = `${url}?${paramsURL}`;
+    // Concatenate URL with parameters
+    const finalURL = `${url}?${paramsURL}`;
 
-    var status;
+    let status;
     const start = Date.now();
 
-    if (method === "GET") {
-      await fetch(finalURL)
-        .then((response) => {
-          status = response.status;
-          return response.json();
-        })
-        .then((result) => {
-          dispatch({ type: "SET_RESPONSE", payload: result });
-        })
-        .catch((err) => {
-          alert("Couldn't resolve the hostname to an IP address");
-          error = true;
-          dispatch({ type: "SET_DETAIL", payload: { status: 400, time: 0 } });
-        });
-    } else {
-      await fetch(finalURL, {
+    try {
+      const response = await fetch(finalURL, {
         method: method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestJSON),
-      })
-        .then((response) => {
-          status = response.status;
-          return response.json();
-        })
-        .then((result) => {
-          dispatch({ type: "SET_RESPONSE", payload: result });
-        })
-        .catch((err) => {
-          alert("Couldn't resolve the hostname to an IP address");
-          error = true;
-        });
+        headers: method === "GET" ? {} : { "Content-Type": "application/json" },
+        body: method === "GET" ? undefined : JSON.stringify(requestJSON),
+      });
+
+      status = response.status;
+
+      if (status === 200) {
+        // Set headers if status is 200
+        const headers = response.headers;
+        dispatch({ type: "SET_HEADERS", payload: [...headers.entries()] });
+      }
+
+      const result = await response.json();
+      // Set response
+      dispatch({ type: "SET_RESPONSE", payload: result });
+    } catch (err) {
+      alert("Couldn't resolve the hostname to an IP address");
+      error = true;
     }
 
     const end = Date.now();
     const time = end - start;
 
     if (error) {
-      dispatch({ type: "SET_DETAIL", payload: { status: 400, time: 0 } });
-      dispatch({ type: "SET_RESPONSE", payload: {} });
+      // Handle error
+      resetState();
     } else {
+      // Set detail with status and time
       dispatch({ type: "SET_DETAIL", payload: { status: status, time: time } });
     }
+  }
+
+  // Reset state
+  function resetState() {
+    dispatch({ type: "SET_DETAIL", payload: { status: 400, time: 0 } });
+    dispatch({ type: "SET_RESPONSE", payload: {} });
+    dispatch({ type: "SET_HEADERS", payload: [] });
   }
 
   function handleURL(e) {
@@ -109,9 +106,9 @@ function Main() {
 
   return (
     <div>
-      https://jsonplaceholder.typicode.com/todos :
-      https://api.agify.io?name=suman
-      <div className="flex w-full items-center justify-center">
+      {/* https://jsonplaceholder.typicode.com/todos :
+      https://api.agify.io?name=suman */}
+      <div className="my-10 flex w-full items-center justify-center">
         <select
           className="cursor-pointer rounded-l-md border-[1px] border-zinc-200 p-2 outline-none"
           onChange={handleMethod}
@@ -125,20 +122,41 @@ function Main() {
 
         <input
           type="text"
-          className="max-w-xl flex-1 bg-zinc-50 py-2 pl-3 outline-none"
+          className="w-full flex-1 bg-zinc-50 px-3 py-2 outline-none"
           placeholder="https://example.com/"
           onChange={handleURL}
         />
 
         <button
-          className="rounded-r-md bg-pink-500 px-6 py-2 text-zinc-100"
+          className="rounded-r-md bg-pink-500 px-4 py-2 text-zinc-100 md:px-6"
           onClick={handleRequest}
         >
           Send
         </button>
       </div>
-      <Query />
-      <Json />
+      <div className="my-10 mb-6 flex gap-10">
+        <Link
+          to={"/get-started"}
+          className={
+            location.pathname === "/get-started"
+              ? "border-b-2 border-pink-600"
+              : ""
+          }
+        >
+          Query
+        </Link>
+        <Link
+          to={"/get-started/json"}
+          className={
+            location.pathname === "/get-started/json"
+              ? "border-b-2 border-pink-600"
+              : ""
+          }
+        >
+          JSON
+        </Link>
+      </div>
+      <Outlet />
       <Response />
     </div>
   );

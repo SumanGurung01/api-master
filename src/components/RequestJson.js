@@ -8,7 +8,7 @@ export function getRequestJSON() {
   return requestJson();
 }
 
-function Json() {
+function RequestJson() {
   requestJsonRef = useRef();
 
   useEffect(() => {
@@ -16,12 +16,7 @@ function Json() {
     requestJson = returnRequestJson;
   }, [requestJsonRef]);
 
-  return (
-    <div>
-      JSON
-      <div ref={requestJsonRef}></div>
-    </div>
-  );
+  return <div ref={requestJsonRef}></div>;
 }
 
-export default memo(Json);
+export default memo(RequestJson);
