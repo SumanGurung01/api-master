@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, memo } from "react";
 import { useSelector } from "react-redux";
-import { setupEditor } from "../editor/editor";
+import { setupEditorResponse } from "../editor/editor";
 
 function Response() {
   const responseDetail = useSelector((state) => state.responseDetail);
@@ -12,7 +12,7 @@ function Response() {
 
     responseRef.current.innerHTML = "";
 
-    const { updateResponse } = setupEditor(responseRef);
+    const { updateResponse } = setupEditorResponse(responseRef);
     updateResponse(response);
   }, [response]);
 

@@ -53,10 +53,20 @@ const responseReducer = (response = null, action) => {
   }
 };
 
+const requestJsonReducer = (request = null, action) => {
+  switch (action.type) {
+    case "SET_REQUEST_JSON":
+      return action.payload;
+    default:
+      return request;
+  }
+};
+
 export const allReducers = combineReducers({
   method: methodReducer,
   url: urlReducer,
   params: paramsReducer,
   responseDetail: responseDetailReducer,
   response: responseReducer,
+  request: requestJsonReducer,
 });

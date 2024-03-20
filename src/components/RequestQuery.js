@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { generateRandomID } from "../utils/libs";
 import { Trash } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,7 +24,7 @@ function Query() {
 
   function setParams(e, field, idx) {
     const newParams = params.map((param) => {
-      if (param.id == idx) {
+      if (param.id === idx) {
         field === "key"
           ? (param.key = e.target.value)
           : (param.value = e.target.value);

@@ -8,10 +8,10 @@ const basicExtensions = [
   basicSetup,
   keymap.of([indentWithTab]),
   json(),
-  EditorState.tabSize.of(2),
+  EditorState.tabSize.of(4),
 ];
 
-export function setupEditor(responseRef) {
+export function setupEditorResponse(responseRef) {
   const responseEditor = new EditorView({
     state: EditorState.create({
       doc: "",
@@ -31,4 +31,30 @@ export function setupEditor(responseRef) {
   }
 
   return { updateResponse };
+}
+
+export function setupEditorRequest(requestRef) {
+  const requestEditor = new EditorView({
+    state: EditorState.create({
+      doc: "{}",
+      extensions: [...basicExtensions],
+    }),
+    parent: requestRef.current,
+  });
+
+  function updateRequest(value) {
+    requestEditor.dispatch({
+      changes: {
+        from: 0,
+        to: requestEditor.state.doc.length,
+        insert: JSON.stringify(value, null, 4),
+      },
+    });
+  }
+
+  function returnRequestJson() {
+    return requestEditor.state.doc;
+  }
+
+  return { updateRequest, returnRequestJson, requestEditor };
 }

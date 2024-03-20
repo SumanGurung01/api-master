@@ -1,11 +1,13 @@
 import React from "react";
 import { methods } from "../utils/constant";
 import { useDispatch, useSelector } from "react-redux";
-import Query from "./Query";
+import Query from "./RequestQuery";
 import { generateUrlFromParams } from "../utils/libs";
 import Response from "./Response";
+import Json, { getRequestJSON } from "./RequestJson";
 
 function Main() {
+  console.log("Main");
   const method = useSelector((state) => state.method);
   const url = useSelector((state) => state.url);
   const params = useSelector((state) => state.params);
@@ -19,8 +21,38 @@ function Main() {
 
   //function to handleRequest
   async function handleRequest() {
+    // if empty url then return
+    if (url === "") {
+      alert("Enter URL");
+      return;
+    }
+
+    var error = false;
+    // generate param url string => eg: name=user&age=10
     var paramsURL = generateUrlFromParams(params);
-    var finalURL = paramsURL !== "" ? `${url}?${paramsURL}` : url;
+
+    // get the request json
+    var requestJSON;
+    try {
+      requestJSON = JSON.parse(getRequestJSON().text.join(""));
+    } catch {
+      error = true;
+      alert("Invalid JSON");
+    }
+
+    if (error) {
+      dispatch({ type: "SET_DETAIL", payload: { status: 400, time: 0 } });
+      dispatch({ type: "SET_RESPONSE", payload: {} });
+      return;
+    }
+
+    dispatch({
+      type: "SET_REQUEST_JSON",
+      payload: requestJSON,
+    });
+
+    // concat main url and query params
+    var finalURL = `${url}?${paramsURL}`;
 
     var status;
     const start = Date.now();
@@ -33,6 +65,11 @@ function Main() {
         })
         .then((result) => {
           dispatch({ type: "SET_RESPONSE", payload: result });
+        })
+        .catch((err) => {
+          alert("Couldn't resolve the hostname to an IP address");
+          error = true;
+          dispatch({ type: "SET_DETAIL", payload: { status: 400, time: 0 } });
         });
     } else {
       await fetch(finalURL, {
@@ -40,7 +77,7 @@ function Main() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify(requestJSON),
       })
         .then((response) => {
           status = response.status;
@@ -48,13 +85,22 @@ function Main() {
         })
         .then((result) => {
           dispatch({ type: "SET_RESPONSE", payload: result });
+        })
+        .catch((err) => {
+          alert("Couldn't resolve the hostname to an IP address");
+          error = true;
         });
     }
 
     const end = Date.now();
     const time = end - start;
 
-    dispatch({ type: "SET_DETAIL", payload: { status: status, time: time } });
+    if (error) {
+      dispatch({ type: "SET_DETAIL", payload: { status: 400, time: 0 } });
+      dispatch({ type: "SET_RESPONSE", payload: {} });
+    } else {
+      dispatch({ type: "SET_DETAIL", payload: { status: status, time: time } });
+    }
   }
 
   function handleURL(e) {
@@ -62,7 +108,9 @@ function Main() {
   }
 
   return (
-    <div className="">
+    <div>
+      https://jsonplaceholder.typicode.com/todos :
+      https://api.agify.io?name=suman
       <div className="flex w-full items-center justify-center">
         <select
           className="cursor-pointer rounded-l-md border-[1px] border-zinc-200 p-2 outline-none"
@@ -89,8 +137,8 @@ function Main() {
           Send
         </button>
       </div>
-
       <Query />
+      <Json />
       <Response />
     </div>
   );
