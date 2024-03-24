@@ -63,14 +63,14 @@ function RequestQuery() {
           />
 
           <button onClick={() => deleteParam(param.id)}>
-            <Trash size={20} />
+            <Trash size={20} className="duration-200 hover:text-violet-500" />
           </button>
         </div>
       ))}
 
       <button
         onClick={addParams}
-        className="rounded-md border-[1px] border-violet-500 px-2 py-1 text-violet-500"
+        className="rounded-md border-[1px] border-violet-500 px-2 py-1 text-violet-500 duration-200 hover:bg-violet-500 hover:text-zinc-100"
       >
         Add Input
       </button>
