@@ -13,15 +13,16 @@ function Home() {
 
       <div className="max-w-3xl md:absolute md:text-zinc-100">
         <p className="mt-10 text-center text-3xl font-semibold md:text-5xl">
-          Explore, Build, & Test APIs with{" "}
-          <span className="text-pink-500 md:text-pink-400">API Master.</span>
+          Explore, Build & Test APIs with{" "}
+          <span className="text-violet-500 md:text-violet-400">API Master</span>
+          .
         </p>
 
         <p className="mt-6 text-center text-lg md:text-xl">
           Building and testing API made easy
         </p>
 
-        <button className="text-zinc-10 mx-auto my-10 flex rounded-md bg-pink-500 p-2 px-4 text-lg text-zinc-100">
+        <button className="text-zinc-10 mx-auto my-10 flex rounded-md bg-violet-500 p-2 px-4 text-lg text-zinc-100">
           <Link
             to={"/get-started"}
             className="flex items-center justify-center gap-2"

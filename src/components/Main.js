@@ -19,8 +19,6 @@ function Main() {
     dispatch({ type: "SET_METHOD", payload: e.target.value });
   }
 
-  var headersArray;
-
   //function to handleRequest
   async function handleRequest() {
     // Check if URL is empty
@@ -35,12 +33,18 @@ function Main() {
     const paramsURL = generateUrlFromParams(params);
 
     let requestJSON;
-    try {
-      // Parse request JSON
-      requestJSON = JSON.parse(getRequestJSON().text.join(""));
-    } catch {
-      error = true;
-      alert("Invalid JSON");
+
+    if (method !== "GET") {
+      try {
+        // Parse request JSON
+        requestJSON = JSON.parse(getRequestJSON().text.join(""));
+      } catch {
+        error = true;
+        alert("Invalid JSON");
+      }
+
+      // Set request JSON
+      dispatch({ type: "SET_REQUEST_JSON", payload: requestJSON });
     }
 
     if (error) {
@@ -48,9 +52,6 @@ function Main() {
       resetState();
       return;
     }
-
-    // Set request JSON
-    dispatch({ type: "SET_REQUEST_JSON", payload: requestJSON });
 
     // Concatenate URL with parameters
     const finalURL = `${url}?${paramsURL}`;
@@ -106,8 +107,6 @@ function Main() {
 
   return (
     <div>
-      {/* https://jsonplaceholder.typicode.com/todos :
-      https://api.agify.io?name=suman */}
       <div className="my-10 flex w-full items-center justify-center">
         <select
           className="cursor-pointer rounded-l-md border-[1px] border-zinc-200 p-2 outline-none"
@@ -128,18 +127,19 @@ function Main() {
         />
 
         <button
-          className="rounded-r-md bg-pink-500 px-4 py-2 text-zinc-100 md:px-6"
+          className="rounded-r-md bg-violet-500 px-4 py-2 text-zinc-100 md:px-6"
           onClick={handleRequest}
         >
           Send
         </button>
       </div>
+
       <div className="my-10 mb-6 flex gap-10">
         <Link
           to={"/get-started"}
           className={
             location.pathname === "/get-started"
-              ? "border-b-2 border-pink-600"
+              ? "border-b-2 border-violet-600"
               : ""
           }
         >
@@ -149,7 +149,7 @@ function Main() {
           to={"/get-started/json"}
           className={
             location.pathname === "/get-started/json"
-              ? "border-b-2 border-pink-600"
+              ? "border-b-2 border-violet-600"
               : ""
           }
         >

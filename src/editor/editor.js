@@ -12,6 +12,7 @@ const basicExtensions = [
 ];
 
 export function setupEditorResponse(responseRef) {
+  // response editor
   const responseEditor = new EditorView({
     state: EditorState.create({
       doc: "",
@@ -20,6 +21,7 @@ export function setupEditorResponse(responseRef) {
     parent: responseRef.current,
   });
 
+  // function ti update response
   function updateResponse(value) {
     responseEditor.dispatch({
       changes: {
@@ -34,6 +36,7 @@ export function setupEditorResponse(responseRef) {
 }
 
 export function setupEditorRequest(requestRef) {
+  // request editor
   const requestEditor = new EditorView({
     state: EditorState.create({
       doc: "{}",
@@ -42,19 +45,10 @@ export function setupEditorRequest(requestRef) {
     parent: requestRef.current,
   });
 
-  function updateRequest(value) {
-    requestEditor.dispatch({
-      changes: {
-        from: 0,
-        to: requestEditor.state.doc.length,
-        insert: JSON.stringify(value, null, 4),
-      },
-    });
-  }
-
+  // return editor current content (json)
   function returnRequestJson() {
     return requestEditor.state.doc;
   }
 
-  return { updateRequest, returnRequestJson, requestEditor };
+  return { returnRequestJson };
 }

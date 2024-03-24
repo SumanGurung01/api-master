@@ -70,7 +70,7 @@ function RequestQuery() {
 
       <button
         onClick={addParams}
-        className="rounded-md border-[1px] border-pink-500 px-2 py-1 text-pink-500"
+        className="rounded-md border-[1px] border-violet-500 px-2 py-1 text-violet-500"
       >
         Add Input
       </button>
